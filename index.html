@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with Groq | Hayden Kong</title>
+    <link rel="icon" href="https://asset.brandfetch.io/idxygbEPCQ/idzCyF-I44.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,7 +16,7 @@
             <div class="custom-select">
                 <div class="custom-select-trigger">
                     <img id="selected-icon" src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Selected Icon" class="option-icon">
-                    <span>Select Model</span>
+                    <span>Select AI Model</span>
                     <div class="arrow"></div>
                 </div>
                 <div class="custom-options">
@@ -34,49 +35,48 @@
                 </div>
             </div>
         </div>
-        <div class="user-message">Hi</div>
-        <div class="ai-message">Hello! I am a AI chatbot.</div>
-        </div>
+        <!-- TEST MESSAGES -->
+        <!-- <div class="user-message">Hi</div>
+        <div class="ai-message">Hello! I am a AI chatbot.</div> -->
+    </div>
 
     <div id="input-area">
         <input type="text" id="message-input" placeholder="Type your message...">
         <button id="send-button">Send</button>
     </div>
 
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-    const selectWrapper = document.querySelector('.custom-select-wrapper');
-    const selectTrigger = selectWrapper.querySelector('.custom-select-trigger');
-    const optionsContainer = selectWrapper.querySelector('.custom-options');
-    const optionsList = optionsContainer.querySelectorAll('.custom-option');
-    const selectedIcon = document.getElementById('selected-icon');
+            const selectWrapper = document.querySelector('.custom-select-wrapper');
+            const selectTrigger = selectWrapper.querySelector('.custom-select-trigger');
+            const optionsContainer = selectWrapper.querySelector('.custom-options');
+            const optionsList = optionsContainer.querySelectorAll('.custom-option');
+            const selectedIcon = document.getElementById('selected-icon');
 
-    selectTrigger.addEventListener('click', () => {
-        optionsContainer.classList.toggle('open');
-    });
+            selectTrigger.addEventListener('click', () => {
+                optionsContainer.classList.toggle('open');
+            });
 
-    optionsList.forEach(option => {
-        option.addEventListener('click', () => {
-            const iconSrc = option.getAttribute('data-icon');
-            selectedIcon.src = iconSrc;
-            selectTrigger.querySelector('span').textContent = option.textContent.trim();
-            optionsContainer.classList.remove('open');
-            optionsList.forEach(opt => opt.classList.remove('selected'));
-            option.classList.add('selected');
+            optionsList.forEach(option => {
+                option.addEventListener('click', () => {
+                    const iconSrc = option.getAttribute('data-icon');
+                    selectedIcon.src = iconSrc;
+                    selectTrigger.querySelector('span').textContent = option.textContent.trim();
+                    optionsContainer.classList.remove('open');
+                    optionsList.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                });
+            });
+
+            window.addEventListener('click', (e) => {
+                if (!selectWrapper.contains(e.target)) {
+                    optionsContainer.classList.remove('open');
+                }
+            });
         });
-    });
-
-    window.addEventListener('click', (e) => {
-        if (!selectWrapper.contains(e.target)) {
-            optionsContainer.classList.remove('open');
-        }
-    });
-});
-
-
 
     </script>
+
     <script type="importmap">
         {
             "imports": {
@@ -84,12 +84,14 @@
             }
         }
     </script>
+
     <script type="module">
         import Groq from "@groq-sdk";
-        const groq = new Groq({ apiKey: "APIKEY", dangerouslyAllowBrowser: true });
+        const groq = new Groq({ apiKey: "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", dangerouslyAllowBrowser: true });
         const chatContainer = document.getElementById("chat-container");
         const messageInput = document.getElementById("message-input");
         const sendButton = document.getElementById("send-button");
+        let selectedModel = "llama3-8b-8192";
 
         sendButton.addEventListener("click", sendMessage);
         messageInput.addEventListener("keydown", (event) => {
@@ -117,21 +119,24 @@
                         content: message,
                     },
                 ],
-                model: "llama3-8b-8192",
+                model: selectedModel,
             });
         }
 
         function addMessage(role, content) {
-            const messageElement = document.createElement("div");
-            messageElement.classList.add("message", `${role}-message`);
-            messageElement.textContent = content;
-            chatContainer.appendChild(messageElement);
-        }
+    const messageElement = document.createElement("p");
+    messageElement.classList.add("message", `${role}-message`);
+    messageElement.innerHTML = content.replace(/\n/g, "<br>"); // replace \n with <br>
+    chatContainer.appendChild(messageElement);
+}
 
-
-        
-        
+        const optionsList = document.querySelectorAll('.custom-option');
+        optionsList.forEach(option => {
+            option.addEventListener('click', () => {
+                selectedModel = option.getAttribute('data-value');
+            });
+        });
     </script>
-    
+
 </body>
 </html>
