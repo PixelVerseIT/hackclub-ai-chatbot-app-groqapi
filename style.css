@@ -8,12 +8,15 @@ h1{
 
 #chat-container {
     width: 500px;
-    min-height: 500px;
+    height: 500px;
     margin: 20px auto;
     border: 1px solid #ccc;
     padding: 10px;
     border-radius: 5px;
+    overflow-y: scroll;
 }
+
+
 
 .message {
     margin-bottom: 10px;
@@ -67,3 +70,71 @@ h1{
     border-radius: 15px 15px 15px 0px;
     margin-bottom: 15px;
 }
+
+
+
+.custom-select-wrapper {
+    position: relative;
+    width: 200px;
+    user-select: none;
+    margin-bottom: 10px;
+}
+
+.custom-select {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.custom-select-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #ffffff;
+}
+
+.custom-select-trigger .arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #000;
+}
+
+.custom-options {
+    position: absolute;
+    display: none;
+    flex-direction: column;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-top: none;
+    z-index: 2;
+}
+
+.custom-options.open {
+    display: flex;
+}
+
+.custom-option {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.custom-option:hover, .custom-option.selected {
+    background-color: #f0f0f0;
+}
+
+.option-icon {
+    margin-right: 10px;
+    width: 30px;
+    height: 30px;
+}
+

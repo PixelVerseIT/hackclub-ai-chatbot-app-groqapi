@@ -11,6 +11,29 @@
     <img class="logo" src="https://raw.githubusercontent.com/RMNCLDYO/groq-ai-toolkit/main/.github/groq-logo.png" alt="">
     <h1>Chat with Groq API</h1>
     <div id="chat-container">
+        <div class="custom-select-wrapper">
+            <div class="custom-select">
+                <div class="custom-select-trigger">
+                    <img id="selected-icon" src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Selected Icon" class="option-icon">
+                    <span>Select Model</span>
+                    <div class="arrow"></div>
+                </div>
+                <div class="custom-options">
+                    <div class="custom-option selected" data-value="llama3-8b-8192" data-icon="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg">
+                        <img src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Llama Icon" class="option-icon"> Llama 3 8b
+                    </div>
+                    <div class="custom-option" data-value="llama3-70b-8192" data-icon="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg">
+                        <img src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Llama Icon" class="option-icon"> LLama 3 70b
+                    </div>
+                    <div class="custom-option" data-value="mixtral-8x7b-32768" data-icon="https://www.lemonfox.ai/images/landingpage/mistral-ai-logo.webp">
+                        <img src="https://www.lemonfox.ai/images/landingpage/mistral-ai-logo.webp" alt="Mixtral Icon" class="option-icon"> Mixtral 8x7B
+                    </div>
+                    <div class="custom-option" data-value="gemma-7b-it" data-icon="https://kura.pro/sebastienrousseau/images/logos/gemma.webp">
+                        <img src="https://kura.pro/sebastienrousseau/images/logos/gemma.webp" alt="Gemma Icon" class="option-icon"> Google Gemma 7b
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="user-message">Hi</div>
         <div class="ai-message">Hello! I am a AI chatbot.</div>
         </div>
@@ -19,7 +42,41 @@
         <input type="text" id="message-input" placeholder="Type your message...">
         <button id="send-button">Send</button>
     </div>
-    
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    const selectWrapper = document.querySelector('.custom-select-wrapper');
+    const selectTrigger = selectWrapper.querySelector('.custom-select-trigger');
+    const optionsContainer = selectWrapper.querySelector('.custom-options');
+    const optionsList = optionsContainer.querySelectorAll('.custom-option');
+    const selectedIcon = document.getElementById('selected-icon');
+
+    selectTrigger.addEventListener('click', () => {
+        optionsContainer.classList.toggle('open');
+    });
+
+    optionsList.forEach(option => {
+        option.addEventListener('click', () => {
+            const iconSrc = option.getAttribute('data-icon');
+            selectedIcon.src = iconSrc;
+            selectTrigger.querySelector('span').textContent = option.textContent.trim();
+            optionsContainer.classList.remove('open');
+            optionsList.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+        });
+    });
+
+    window.addEventListener('click', (e) => {
+        if (!selectWrapper.contains(e.target)) {
+            optionsContainer.classList.remove('open');
+        }
+    });
+});
+
+
+
+    </script>
     <script type="importmap">
         {
             "imports": {
@@ -51,6 +108,29 @@
                 addMessage("ai", response.choices[0]?.message?.content || "");
             }
         }
+
+        async function getGroqChatCompletion(message) {
+            return groq.chat.completions.create({
+                messages: [
+                    {
+                        role: "user",
+                        content: message,
+                    },
+                ],
+                model: "llama3-8b-8192",
+            });
+        }
+
+        function addMessage(role, content) {
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message", `${role}-message`);
+            messageElement.textContent = content;
+            chatContainer.appendChild(messageElement);
+        }
+
+
+        
+        
     </script>
     
 </body>
