@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Groq | Hayden Kong</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <img class="logo" src="https://raw.githubusercontent.com/RMNCLDYO/groq-ai-toolkit/main/.github/groq-logo.png" alt="">
+    <h1>Chat with Groq API</h1>
+    <div id="chat-container">
+        <div class="user-message">Hi</div>
+        <div class="ai-message">Hello! I am a AI chatbot.</div>
+        </div>
+
+    <div id="input-area">
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button id="send-button">Send</button>
+    </div>
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "@groq-sdk": "https://esm.run/groq-sdk"
+            }
+        }
+    </script>
+    <script type="module">
+        import Groq from "@groq-sdk";
+        const groq = new Groq({ apiKey: "APIKEY", dangerouslyAllowBrowser: true });
+        const chatContainer = document.getElementById("chat-container");
+        const messageInput = document.getElementById("message-input");
+        const sendButton = document.getElementById("send-button");
+
+        sendButton.addEventListener("click", sendMessage);
+        messageInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message !== "") {
+                addMessage("user", message);
+                messageInput.value = "";
+
+                const response = await getGroqChatCompletion(message);
+                addMessage("ai", response.choices[0]?.message?.content || "");
+            }
+        }
+    </script>
+    
+</body>
+</html>
