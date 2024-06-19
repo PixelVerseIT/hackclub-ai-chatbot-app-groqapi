@@ -26,8 +26,8 @@
                     <div class="custom-option" data-value="llama3-70b-8192" data-icon="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg">
                         <img src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Llama Icon" class="option-icon"> LLama 3 70b
                     </div>
-                    <div class="custom-option" data-value="mixtral-8x7b-32768" data-icon="https://www.lemonfox.ai/images/landingpage/mistral-ai-logo.webp">
-                        <img src="https://www.lemonfox.ai/images/landingpage/mistral-ai-logo.webp" alt="Mixtral Icon" class="option-icon"> Mixtral 8x7B
+                    <div class="custom-option" data-value="mixtral-8x7b-32768" data-icon="https://seeklogo.com/images/M/mistral-ai-icon-logo-B3319DCA6B-seeklogo.com.png">
+                        <img src="https://seeklogo.com/images/M/mistral-ai-icon-logo-B3319DCA6B-seeklogo.com.png" alt="Mixtral Icon" class="option-icon"> Mixtral 8x7B
                     </div>
                     <div class="custom-option" data-value="gemma-7b-it" data-icon="https://kura.pro/sebastienrousseau/images/logos/gemma.webp">
                         <img src="https://kura.pro/sebastienrousseau/images/logos/gemma.webp" alt="Gemma Icon" class="option-icon"> Google Gemma 7b
@@ -41,7 +41,7 @@
     </div>
 
     <div id="input-area">
-        <input type="text" id="message-input" placeholder="Type your message...">
+        <input type="text" id="message-input" placeholder="Message Groq API...">
         <button id="send-button">Send</button>
     </div>
 
@@ -92,6 +92,7 @@
         const messageInput = document.getElementById("message-input");
         const sendButton = document.getElementById("send-button");
         let selectedModel = "llama3-8b-8192";
+        let messageHistory = [];
 
         sendButton.addEventListener("click", sendMessage);
         messageInput.addEventListener("keydown", (event) => {
@@ -105,30 +106,29 @@
             if (message !== "") {
                 addMessage("user", message);
                 messageInput.value = "";
+                messageHistory.push({ role: "user", content: message });
 
-                const response = await getGroqChatCompletion(message);
-                addMessage("ai", response.choices[0]?.message?.content || "");
+                const response = await getGroqChatCompletion(messageHistory);
+                const aiMessage = response.choices[0]?.message?.content || "";
+                addMessage("ai", aiMessage);
+                messageHistory.push({ role: "assistant", content: aiMessage });
             }
         }
 
-        async function getGroqChatCompletion(message) {
+        async function getGroqChatCompletion(messages) {
             return groq.chat.completions.create({
-                messages: [
-                    {
-                        role: "user",
-                        content: message,
-                    },
-                ],
+                messages: messages,
                 model: selectedModel,
             });
         }
 
         function addMessage(role, content) {
-    const messageElement = document.createElement("p");
-    messageElement.classList.add("message", `${role}-message`);
-    messageElement.innerHTML = content.replace(/\n/g, "<br>"); // replace \n with <br>
-    chatContainer.appendChild(messageElement);
-}
+            const messageElement = document.createElement("p");
+            messageElement.classList.add("message", `${role}-message`);
+            messageElement.innerHTML = content.replace(/\n/g, "<br>"); // replace \n with <br>
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the bottom
+        }
 
         const optionsList = document.querySelectorAll('.custom-option');
         optionsList.forEach(option => {

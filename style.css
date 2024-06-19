@@ -2,18 +2,25 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+body{
+    background-color: #212121;
+    color: white;
+}
+
 h1{
     text-align: center;
 }
 
 #chat-container {
-    width: 700px;
+    margin-right: 10px;
+    margin-left: 10px;
     height: 500px;
     margin: 20px auto;
     border: 1px solid #ccc;
     padding: 10px;
     border-radius: 5px;
     overflow-y: scroll;
+    background-color: #151515;
 }
 
 
@@ -31,23 +38,41 @@ h1{
 
 #message-input:focus {
     outline: none;
-    border: 2px solid #007bff;
 }
 
 #message-input {
     width: 90%;
     padding: 10px;
-    border: 2px solid #bbbbbb;
+    border: 0px solid #bbbbbb;
+    color: white;
     border-radius: 5px;
+    background-color: #2e2e2e;
+    transition: 0.3s;
+    font-size: 1.1rem;
+}
+
+#message-input:hover {
+    background-color: #3e3e3e;
 }
 
 #send-button {
+    font-size: 1.1rem;
     padding: 10px 20px;
-    background-color: #4CAF50;
+    background-color: #464d84;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: 0.2s;
+}
+
+#send-button:hover{
+    background-color: #5a5f9e;
+}
+
+#send-button:active{
+    background-color: #3a3f6e;
+    transform: scale(0.95);
 }
 
 .logo{
@@ -95,6 +120,7 @@ h1{
     align-items: center;
     padding: 10px;
     background-color: #ffffff;
+    color: rgb(63, 63, 63);
 }
 
 .custom-select-trigger .arrow {
@@ -112,7 +138,7 @@ h1{
     top: 100%;
     left: 0;
     right: 0;
-    background-color: #ffffff;
+    background-color: #444444;
     border: 1px solid #ccc;
     border-top: none;
     z-index: 2;
@@ -130,7 +156,7 @@ h1{
 }
 
 .custom-option:hover, .custom-option.selected {
-    background-color: #f0f0f0;
+    background-color: #616b72;
 }
 
 .option-icon {
