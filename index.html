@@ -34,6 +34,7 @@
                     </div>
                 </div>
             </div>
+            
         </div>
         <!-- TEST MESSAGES -->
         <!-- <div class="user-message">Hi</div>
@@ -41,11 +42,52 @@
     </div>
 
     <div id="input-area">
-        <input type="text" id="message-input" placeholder="Message Groq API...">
+        <input type="text" id="message-input" placeholder="Type your message...">
         <button id="send-button">Send</button>
+        <button style="margin-top: 5px; background-color: rgb(148, 148, 148);" id="clear-button">Clear Chat</button>
     </div>
 
     <script>
+        // Get the clear button element
+        const clearButton = document.getElementById("clear-button");
+
+        // Function to clear chat history
+        function clearChatHistory() {
+        messageHistory = []; // Reset the message history
+        localStorage.setItem('messageHistory', JSON.stringify(messageHistory)); // Clear from local storage
+        const messageElements = document.querySelectorAll('.message');
+        messageElements.forEach(element => element.remove()); // Remove all message elements
+        }
+        // Add event listener to the clear button
+        clearButton.addEventListener("click", clearChatHistory);
+
+    </script>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "@groq-sdk": "https://esm.run/groq-sdk"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import Groq from "@groq-sdk";
+        const groq = new Groq({ apiKey: "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", dangerouslyAllowBrowser: true });
+        const chatContainer = document.getElementById("chat-container");
+        const messageInput = document.getElementById("message-input");
+        const sendButton = document.getElementById("send-button");
+        let selectedModel = "llama3-8b-8192";
+        let messageHistory = JSON.parse(localStorage.getItem('messageHistory')) || [];
+
+        function addMessage(role, content) {
+            const messageElement = document.createElement("p");
+            messageElement.classList.add("message", `${role}-message`);
+            messageElement.innerHTML = content.replace(/\n/g, "<br>"); // replace \n with <br>
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the bottom
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const selectWrapper = document.querySelector('.custom-select-wrapper');
             const selectTrigger = selectWrapper.querySelector('.custom-select-trigger');
@@ -73,26 +115,10 @@
                     optionsContainer.classList.remove('open');
                 }
             });
+
+            // Load message history from local storage
+            messageHistory.forEach(message => addMessage(message.role, message.content));
         });
-
-    </script>
-
-    <script type="importmap">
-        {
-            "imports": {
-                "@groq-sdk": "https://esm.run/groq-sdk"
-            }
-        }
-    </script>
-
-    <script type="module">
-        import Groq from "@groq-sdk";
-        const groq = new Groq({ apiKey: "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", dangerouslyAllowBrowser: true });
-        const chatContainer = document.getElementById("chat-container");
-        const messageInput = document.getElementById("message-input");
-        const sendButton = document.getElementById("send-button");
-        let selectedModel = "llama3-8b-8192";
-        let messageHistory = [];
 
         sendButton.addEventListener("click", sendMessage);
         messageInput.addEventListener("keydown", (event) => {
@@ -107,11 +133,13 @@
                 addMessage("user", message);
                 messageInput.value = "";
                 messageHistory.push({ role: "user", content: message });
+                localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
 
                 const response = await getGroqChatCompletion(messageHistory);
                 const aiMessage = response.choices[0]?.message?.content || "";
-                addMessage("ai", aiMessage);
+                addMessage("assistant", aiMessage);
                 messageHistory.push({ role: "assistant", content: aiMessage });
+                localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
             }
         }
 
@@ -120,14 +148,6 @@
                 messages: messages,
                 model: selectedModel,
             });
-        }
-
-        function addMessage(role, content) {
-            const messageElement = document.createElement("p");
-            messageElement.classList.add("message", `${role}-message`);
-            messageElement.innerHTML = content.replace(/\n/g, "<br>"); // replace \n with <br>
-            chatContainer.appendChild(messageElement);
-            chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the bottom
         }
 
         const optionsList = document.querySelectorAll('.custom-option');

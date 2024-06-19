@@ -83,14 +83,14 @@ h1{
 }
 
 .user-message {
-    background-color: #eee;
+    background-color: #5c5c5c;
     text-align: right;
     padding: 10px 20px;
     border-radius: 15px 15px 0px 15px;
     margin-bottom: 15px;
 }
-.ai-message {
-    background-color: #c3ffc6;
+.assistant-message {
+    background-color: #212121;
     text-align: left;
     padding: 10px 20px;
     border-radius: 15px 15px 15px 0px;
