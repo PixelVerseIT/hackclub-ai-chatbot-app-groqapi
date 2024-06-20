@@ -19,11 +19,34 @@ h1{
     width: 100%;
 }
 
+.newchat-button{
+    margin-bottom: 5px;
+    padding: 10px 20px;
+    width: 100%;
+    background-color: #464d84;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.newchat-button:hover{
+    background-color: #5a5f9e;
+}
+
+.newchat-button:active{
+    background-color: #3a3f6e;
+    transform: scale(0.95);
+}
+
 #sidebar {
     width: 20%;
+    border-radius: 10px;
     background-color: #333;
     padding: 10px;
     box-sizing: border-box;
+    height: 75vh;
 }
 
 #sidebar h2 {
@@ -53,12 +76,15 @@ h1{
     width: 80%;
     padding: 10px;
     box-sizing: border-box;
+    padding-top: 0px;
+    margin-top: 0px;
+    height: 75vh;
 }
 
 #chat-container {
-    height: 500px;
+    height: 80%;
     margin: 20px auto;
-    border: 1px solid #ccc;
+    border: 1px solid #696969;
     padding: 10px;
     border-radius: 5px;
     overflow-y: scroll;
@@ -81,7 +107,7 @@ h1{
 }
 
 #message-input {
-    width: 90%;
+    width: 88%;
     padding: 10px;
     border: 0px solid #bbbbbb;
     color: white;
@@ -202,4 +228,10 @@ h1{
     margin-right: 10px;
     width: 30px;
     height: 30px;
+}
+
+.header-h1 {
+    margin: 0;
+    padding: 0;
+    margin-top: 10px;
 }
