@@ -15,26 +15,19 @@
     
     <div id="main-container">
         <div id="sidebar">
-            <h2>Previous Chats</h2>
-            <button id="new-chat-button" class="newchat-button">New Chat</button>
-            <ul id="chat-list"></ul>
-            
-        </div>
-
-        <div id="chat-area">
             <div class="custom-select-wrapper">
                 <div class="custom-select">
                     <div class="custom-select-trigger">
-                        <img id="selected-icon" src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Selected Icon" class="option-icon">
+                        <img id="selected-icon" src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png" alt="Selected Icon" class="option-icon">
                         <span>Select AI Model</span>
                         <div class="arrow"></div>
                     </div>
                     <div class="custom-options">
-                        <div class="custom-option selected" data-value="llama3-8b-8192" data-icon="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg">
-                            <img src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Llama Icon" class="option-icon"> Llama 3 8b
+                        <div class="custom-option selected" data-value="llama3-8b-8192" data-icon="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png">
+                            <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png" alt="Llama Icon" class="option-icon"> Llama 3 8b
                         </div>
-                        <div class="custom-option" data-value="llama3-70b-8192" data-icon="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg">
-                            <img src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Llama Icon" class="option-icon"> LLama 3 70b
+                        <div class="custom-option" data-value="llama3-70b-8192" data-icon="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png">
+                            <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png" alt="Llama Icon" class="option-icon"> LLama 3 70b
                         </div>
                         <div class="custom-option" data-value="mixtral-8x7b-32768" data-icon="https://seeklogo.com/images/M/mistral-ai-icon-logo-B3319DCA6B-seeklogo.com.png">
                             <img src="https://seeklogo.com/images/M/mistral-ai-icon-logo-B3319DCA6B-seeklogo.com.png" alt="Mixtral Icon" class="option-icon"> Mixtral 8x7B
@@ -45,6 +38,14 @@
                     </div>
                 </div>
             </div>
+            <h3>Previous Chats</h3>
+            <button id="new-chat-button" class="newchat-button">New Chat</button>
+            <ul id="chat-list"></ul>
+            
+        </div>
+
+        <div id="chat-area">
+            
 
             <div id="chat-container">
                 
@@ -179,6 +180,22 @@
                 }
             });
 
+         optionsList.forEach(option => {
+        option.addEventListener('click', () => {
+            const iconSrc = option.getAttribute('data-icon');
+            selectedIcon.src = iconSrc;
+            selectTrigger.querySelector('span').textContent = option.textContent.trim();
+            optionsContainer.classList.remove('open');
+            optionsList.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            let selectedModel = option.getAttribute('data-value'); // Move declaration here
+            if (currentChatName && chatHistories[currentChatName]) {
+            chatHistories[currentChatName].model = selectedModel;
+            localStorage.setItem('chatHistories', JSON.stringify(chatHistories)); // Update local storage
+            }
+        });
+        });   
+
         async function sendMessage() {
             const message = messageInput.value.trim();
             if (message !== "") {
@@ -205,6 +222,7 @@
                 localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
                 chatHistories[currentChatName].messages = messageHistory;
                 localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
+                console.log(selectedModel)
             }
         }
 
@@ -221,6 +239,7 @@
                 messages: messages,
                 model: selectedModel,
             });
+            console.log("Your selected model is:")
         }
     </script>
 

@@ -42,15 +42,17 @@ h1{
 
 #sidebar {
     width: 20%;
-    border-radius: 10px;
+    border-radius: 13px;
     background-color: #333;
     padding: 10px;
     box-sizing: border-box;
     height: 75vh;
 }
 
-#sidebar h2 {
+#sidebar h3 {
     text-align: center;
+    margin-top: 0px;
+    margin-bottom: 10px;
 }
 
 #chat-list {
@@ -60,7 +62,7 @@ h1{
 
 #chat-list li {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #5a5a5a;
     margin-bottom: 5px;
     cursor: pointer;
     background-color: #444;
@@ -84,9 +86,9 @@ h1{
 #chat-container {
     height: 80%;
     margin: 20px auto;
-    border: 1px solid #696969;
+    border: 1px solid #2c2c2c;
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 13px;
     overflow-y: scroll;
     background-color: #151515;
 }
@@ -166,7 +168,7 @@ h1{
 
 .custom-select-wrapper {
     position: relative;
-    width: 230px;
+    width: 100%;
     user-select: none;
     margin-bottom: 10px;
 }
@@ -175,8 +177,9 @@ h1{
     position: relative;
     display: flex;
     flex-direction: column;
-    border: 1px solid #ccc;
+    /* border: 1px solid #000000; */
     cursor: pointer;
+    width: 100%;
 }
 
 .custom-select-trigger {
@@ -184,8 +187,9 @@ h1{
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    background-color: #ffffff;
-    color: rgb(63, 63, 63);
+    border-radius: 10px;
+    background-color: #4b4b4b;
+    color: rgb(255, 255, 255);
 }
 
 .custom-select-trigger .arrow {
@@ -203,8 +207,10 @@ h1{
     top: 100%;
     left: 0;
     right: 0;
-    background-color: #444444;
-    border: 1px solid #ccc;
+    background-color: #434343;
+    box-shadow: 8px 8px 8px rgba(3, 3, 0, 3);
+    width: 100%;
+    /* border: 1px solid #ccc; */
     border-top: none;
     z-index: 2;
 }
