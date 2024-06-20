@@ -11,57 +11,47 @@
 
     <img class="logo" src="https://raw.githubusercontent.com/RMNCLDYO/groq-ai-toolkit/main/.github/groq-logo.png" alt="">
     <h1>Chat with Groq API</h1>
-    <div id="chat-container">
-        <div class="custom-select-wrapper">
-            <div class="custom-select">
-                <div class="custom-select-trigger">
-                    <img id="selected-icon" src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Selected Icon" class="option-icon">
-                    <span>Select AI Model</span>
-                    <div class="arrow"></div>
-                </div>
-                <div class="custom-options">
-                    <div class="custom-option selected" data-value="llama3-8b-8192" data-icon="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg">
-                        <img src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Llama Icon" class="option-icon"> Llama 3 8b
-                    </div>
-                    <div class="custom-option" data-value="llama3-70b-8192" data-icon="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg">
-                        <img src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Llama Icon" class="option-icon"> LLama 3 70b
-                    </div>
-                    <div class="custom-option" data-value="mixtral-8x7b-32768" data-icon="https://seeklogo.com/images/M/mistral-ai-icon-logo-B3319DCA6B-seeklogo.com.png">
-                        <img src="https://seeklogo.com/images/M/mistral-ai-icon-logo-B3319DCA6B-seeklogo.com.png" alt="Mixtral Icon" class="option-icon"> Mixtral 8x7B
-                    </div>
-                    <div class="custom-option" data-value="gemma-7b-it" data-icon="https://kura.pro/sebastienrousseau/images/logos/gemma.webp">
-                        <img src="https://kura.pro/sebastienrousseau/images/logos/gemma.webp" alt="Gemma Icon" class="option-icon"> Google Gemma 7b
+    
+    <div id="main-container">
+        <div id="sidebar">
+            <h2>Previous Chats</h2>
+            <ul id="chat-list"></ul>
+            <button id="new-chat-button">New Chat</button>
+        </div>
+
+        <div id="chat-area">
+            <div id="chat-container">
+                <div class="custom-select-wrapper">
+                    <div class="custom-select">
+                        <div class="custom-select-trigger">
+                            <img id="selected-icon" src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Selected Icon" class="option-icon">
+                            <span>Select AI Model</span>
+                            <div class="arrow"></div>
+                        </div>
+                        <div class="custom-options">
+                            <div class="custom-option selected" data-value="llama3-8b-8192" data-icon="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg">
+                                <img src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Llama Icon" class="option-icon"> Llama 3 8b
+                            </div>
+                            <div class="custom-option" data-value="llama3-70b-8192" data-icon="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg">
+                                <img src="https://cdn.vectorstock.com/i/500p/60/05/meta-symbol-vector-41876005.jpg" alt="Llama Icon" class="option-icon"> LLama 3 70b
+                            </div>
+                            <div class="custom-option" data-value="mixtral-8x7b-32768" data-icon="https://seeklogo.com/images/M/mistral-ai-icon-logo-B3319DCA6B-seeklogo.com.png">
+                                <img src="https://seeklogo.com/images/M/mistral-ai-icon-logo-B3319DCA6B-seeklogo.com.png" alt="Mixtral Icon" class="option-icon"> Mixtral 8x7B
+                            </div>
+                            <div class="custom-option" data-value="gemma-7b-it" data-icon="https://kura.pro/sebastienrousseau/images/logos/gemma.webp">
+                                <img src="https://kura.pro/sebastienrousseau/images/logos/gemma.webp" alt="Gemma Icon" class="option-icon"> Google Gemma 7b
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
+
+            <div id="input-area">
+                <input type="text" id="message-input" placeholder="Type your message...">
+                <button id="send-button">Send</button>
+            </div>
         </div>
-        <!-- TEST MESSAGES -->
-        <!-- <div class="user-message">Hi</div>
-        <div class="ai-message">Hello! I am a AI chatbot.</div> -->
     </div>
-
-    <div id="input-area">
-        <input type="text" id="message-input" placeholder="Type your message...">
-        <button id="send-button">Send</button>
-        <button style="margin-top: 5px; background-color: rgb(148, 148, 148);" id="clear-button">Clear Chat</button>
-    </div>
-
-    <script>
-        // Get the clear button element
-        const clearButton = document.getElementById("clear-button");
-
-        // Function to clear chat history
-        function clearChatHistory() {
-        messageHistory = []; // Reset the message history
-        localStorage.setItem('messageHistory', JSON.stringify(messageHistory)); // Clear from local storage
-        const messageElements = document.querySelectorAll('.message');
-        messageElements.forEach(element => element.remove()); // Remove all message elements
-        }
-        // Add event listener to the clear button
-        clearButton.addEventListener("click", clearChatHistory);
-
-    </script>
 
     <script type="importmap">
         {
@@ -77,8 +67,12 @@
         const chatContainer = document.getElementById("chat-container");
         const messageInput = document.getElementById("message-input");
         const sendButton = document.getElementById("send-button");
+        const chatList = document.getElementById("chat-list");
+        const newChatButton = document.getElementById("new-chat-button");
         let selectedModel = "llama3-8b-8192";
         let messageHistory = JSON.parse(localStorage.getItem('messageHistory')) || [];
+        let chatHistories = JSON.parse(localStorage.getItem('chatHistories')) || {};
+        let currentChatName = localStorage.getItem('currentChatName') || null;
 
         function addMessage(role, content) {
             const messageElement = document.createElement("p");
@@ -86,6 +80,50 @@
             messageElement.innerHTML = content.replace(/\n/g, "<br>"); // replace \n with <br>
             chatContainer.appendChild(messageElement);
             chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the bottom
+        }
+
+        function loadChatList() {
+            chatList.innerHTML = '';
+            Object.keys(chatHistories).forEach(key => {
+                const li = document.createElement('li');
+                li.textContent = key;
+                li.addEventListener('click', () => loadChat(key));
+                chatList.appendChild(li);
+            });
+        }
+
+        function loadChat(key) {
+            messageHistory = chatHistories[key].messages || [];
+            selectedModel = chatHistories[key].model;
+            chatContainer.innerHTML = '';
+            messageHistory.forEach(message => addMessage(message.role, message.content));
+            currentChatName = key;
+            localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+            localStorage.setItem('currentChatName', currentChatName);
+
+            const selectedOption = document.querySelector(`.custom-option[data-value="${selectedModel}"]`);
+            if (selectedOption) {
+                const selectedIcon = document.getElementById('selected-icon');
+                const selectTrigger = document.querySelector('.custom-select-trigger');
+                selectedIcon.src = selectedOption.getAttribute('data-icon');
+                selectTrigger.querySelector('span').textContent = selectedOption.textContent.trim();
+                document.querySelectorAll('.custom-option').forEach(opt => opt.classList.remove('selected'));
+                selectedOption.classList.add('selected');
+            }
+        }
+
+        function startNewChat() {
+            const chatName = prompt("Enter a name for the new chat:");
+            if (chatName) {
+                chatHistories[chatName] = { model: selectedModel, messages: [] };
+                messageHistory = [];
+                currentChatName = chatName;
+                localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
+                localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+                localStorage.setItem('currentChatName', currentChatName);
+                loadChatList();
+                chatContainer.innerHTML = '';
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -107,6 +145,11 @@
                     optionsContainer.classList.remove('open');
                     optionsList.forEach(opt => opt.classList.remove('selected'));
                     option.classList.add('selected');
+                    selectedModel = option.getAttribute('data-value');
+                    if (currentChatName && chatHistories[currentChatName]) {
+                        chatHistories[currentChatName].model = selectedModel;
+                        localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
+                    }
                 });
             });
 
@@ -117,8 +160,15 @@
             });
 
             // Load message history from local storage
-            messageHistory.forEach(message => addMessage(message.role, message.content));
+            if (currentChatName) {
+                loadChat(currentChatName);
+            }
+
+            // Load chat list
+            loadChatList();
         });
+
+        newChatButton.addEventListener("click", startNewChat);
 
         sendButton.addEventListener("click", sendMessage);
         messageInput.addEventListener("keydown", (event) => {
@@ -134,12 +184,16 @@
                 messageInput.value = "";
                 messageHistory.push({ role: "user", content: message });
                 localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+                chatHistories[currentChatName].messages = messageHistory;
+                localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
 
                 const response = await getGroqChatCompletion(messageHistory);
                 const aiMessage = response.choices[0]?.message?.content || "";
                 addMessage("assistant", aiMessage);
                 messageHistory.push({ role: "assistant", content: aiMessage });
                 localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+                chatHistories[currentChatName].messages = messageHistory;
+                localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
             }
         }
 
@@ -149,13 +203,6 @@
                 model: selectedModel,
             });
         }
-
-        const optionsList = document.querySelectorAll('.custom-option');
-        optionsList.forEach(option => {
-            option.addEventListener('click', () => {
-                selectedModel = option.getAttribute('data-value');
-            });
-        });
     </script>
 
 </body>
