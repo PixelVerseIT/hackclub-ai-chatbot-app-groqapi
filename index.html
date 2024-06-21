@@ -7,6 +7,8 @@
     <title>Chat with Groq | Hayden Kong</title>
     <link rel="icon" href="https://asset.brandfetch.io/idxygbEPCQ/idzCyF-I44.png">
     <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
 </head>
 
 <body>
@@ -92,10 +94,32 @@
         let chatHistories = JSON.parse(localStorage.getItem('chatHistories')) || {};
         let currentChatName = localStorage.getItem('currentChatName') || null;
 
-        function addMessage(role, content) {
-            const messageElement = document.createElement("p");
+        // Initialize Showdown converter
+        const converter = new showdown.Converter({
+            tables: true,
+            tasklists: true,
+            strikethrough: true,
+            simplifiedAutoLink: true,
+            parseImgDimensions: true,
+            smoothLivePreview: true,
+            smartIndentationFix: true,
+            disableForced4SpacesIndentedSublists: true,
+            ghCodeBlocks: true,
+            emoji: true
+        });
+
+        function addMessage(role, content, isMarkdown = false) {
+            const messageElement = document.createElement("div");
             messageElement.classList.add("message", `${role}-message`);
-            messageElement.innerHTML = content.replace(/\n/g, "<br>");
+            
+            if (isMarkdown) {
+                messageElement.innerHTML = converter.makeHtml(content);
+                // Store the original Markdown content as a data attribute
+                messageElement.setAttribute('data-markdown', content);
+            } else {
+                messageElement.textContent = content;
+            }
+            
             chatContainer.appendChild(messageElement);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
@@ -114,7 +138,9 @@
             messageHistory = chatHistories[key].messages || [];
             selectedModel = chatHistories[key].model;
             chatContainer.innerHTML = '';
-            messageHistory.forEach(message => addMessage(message.role, message.content));
+            messageHistory.forEach(message => {
+                addMessage(message.role, message.content, message.role === 'assistant');
+            });
             currentChatName = key;
             localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
             localStorage.setItem('currentChatName', currentChatName);
@@ -131,7 +157,7 @@
         }
 
         function startNewChat() {
-            const chatName = prompt("Enter a name for the new chat:");
+            const chatName = prompt("Enter new chat name:");
             if (chatName) {
                 chatHistories[chatName] = { model: "llama3-70b-8192", messages: [] };
                 messageHistory = [];
@@ -212,14 +238,23 @@
                 localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
 
                 const stream = await getGroqChatStream(messageHistory);
-                let aiMessage = "";
+                let aiMessageDiv = document.createElement("div");
+                aiMessageDiv.classList.add("message", "assistant-message");
+                chatContainer.appendChild(aiMessageDiv);
+
+                let aiMessageContent = "";
+
                 for await (const chunk of stream) {
                     const content = chunk.choices[0]?.delta?.content || "";
-                    aiMessage += content;
-                    addMessage("assistant", aiMessage);
+                    aiMessageContent += content;
+                    // Convert Markdown to HTML as we receive chunks
+                    aiMessageDiv.innerHTML = converter.makeHtml(aiMessageContent);
                 }
 
-                messageHistory.push({ role: "assistant", content: aiMessage });
+                // Store the original Markdown content
+                aiMessageDiv.setAttribute('data-markdown', aiMessageContent);
+
+                messageHistory.push({ role: "assistant", content: aiMessageContent });
                 localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
                 chatHistories[currentChatName].messages = messageHistory;
                 localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
