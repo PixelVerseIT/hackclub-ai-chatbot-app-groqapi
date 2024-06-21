@@ -7,7 +7,6 @@
     <title>Chat with Groq | Hayden Kong</title>
     <link rel="icon" href="https://asset.brandfetch.io/idxygbEPCQ/idzCyF-I44.png">
     <link rel="stylesheet" href="style.css">
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
 </head>
 
@@ -16,7 +15,7 @@
     <img class="logo" src="https://raw.githubusercontent.com/RMNCLDYO/groq-ai-toolkit/main/.github/groq-logo.png"
         alt="">
     <h1 class="header-h1">Chat with Groq API</h1>
-    <p class="header-h1">Developed by <a href="https://x.com/hhaydenk_"></a>Hayden Kong</p>
+    <p class="header-h1">Developed by <a href="https://x.com/hhaydenk_">Hayden Kong</a></p>
 
     <div id="main-container">
         <div id="sidebar">
@@ -56,16 +55,10 @@
             <h3>Previous Chats</h3>
             <button id="new-chat-button" class="newchat-button">New Chat</button>
             <ul id="chat-list"></ul>
-
         </div>
 
         <div id="chat-area">
-
-
-            <div id="chat-container">
-
-            </div>
-
+            <div id="chat-container"></div>
             <div id="input-area">
                 <input type="text" id="message-input" placeholder="Type your message...">
                 <button id="send-button">Send</button>
@@ -74,113 +67,163 @@
     </div>
 
     <script type="importmap">
-{
-"imports": {
-"@groq-sdk": "https://esm.run/groq-sdk"
-}
-}
-</script>
+    {
+        "imports": {
+            "@groq-sdk": "https://esm.run/groq-sdk"
+        }
+    }
+    </script>
 
     <script type="module">
         import Groq from "@groq-sdk";
-        const groq = new Groq({ apiKey: "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", dangerouslyAllowBrowser: true });
-        const chatContainer = document.getElementById("chat-container");
-        const messageInput = document.getElementById("message-input");
-        const sendButton = document.getElementById("send-button");
-        const chatList = document.getElementById("chat-list");
-        const newChatButton = document.getElementById("new-chat-button");
-        let selectedModel = "llama3-70b-8192";
-        let messageHistory = JSON.parse(localStorage.getItem('messageHistory')) || [];
-        let chatHistories = JSON.parse(localStorage.getItem('chatHistories')) || {};
-        let currentChatName = localStorage.getItem('currentChatName') || null;
-
-        // Initialize Showdown converter
-        const converter = new showdown.Converter({
-            tables: true,
-            tasklists: true,
-            strikethrough: true,
-            simplifiedAutoLink: true,
-            parseImgDimensions: true,
-            smoothLivePreview: true,
-            smartIndentationFix: true,
-            disableForced4SpacesIndentedSublists: true,
-            ghCodeBlocks: true,
-            emoji: true
-        });
-
-        function addMessage(role, content, isMarkdown = false) {
-            const messageElement = document.createElement("div");
-            messageElement.classList.add("message", `${role}-message`);
-            
-            if (isMarkdown) {
-                messageElement.innerHTML = converter.makeHtml(content);
-                // Store the original Markdown content as a data attribute
-                messageElement.setAttribute('data-markdown', content);
-            } else {
-                messageElement.textContent = content;
-            }
-            
-            chatContainer.appendChild(messageElement);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function loadChatList() {
-            chatList.innerHTML = '';
-            Object.keys(chatHistories).forEach(key => {
-                const li = document.createElement('li');
-                li.textContent = key;
-                li.addEventListener('click', () => loadChat(key));
-                chatList.appendChild(li);
-            });
-        }
-
-        function loadChat(key) {
-            messageHistory = chatHistories[key].messages || [];
-            selectedModel = chatHistories[key].model;
-            chatContainer.innerHTML = '';
-            messageHistory.forEach(message => {
-                addMessage(message.role, message.content, message.role === 'assistant');
-            });
-            currentChatName = key;
-            localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
-            localStorage.setItem('currentChatName', currentChatName);
-
-            const selectedOption = document.querySelector(`.custom-option[data-value="${selectedModel}"]`);
-            if (selectedOption) {
-                const selectedIcon = document.getElementById('selected-icon');
-                const selectTrigger = document.querySelector('.custom-select-trigger');
-                selectedIcon.src = selectedOption.getAttribute('data-icon');
-                selectTrigger.querySelector('span').textContent = selectedOption.textContent.trim();
-                document.querySelectorAll('.custom-option').forEach(opt => opt.classList.remove('selected'));
-                selectedOption.classList.add('selected');
-            }
-        }
-
-        function startNewChat() {
-            const chatName = prompt("Enter new chat name:");
-            if (chatName) {
-                chatHistories[chatName] = { model: "llama3-70b-8192", messages: [] };
-                messageHistory = [];
-                currentChatName = chatName;
-                localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
-                localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
-                localStorage.setItem('currentChatName', currentChatName);
-                loadChatList();
-                chatContainer.innerHTML = '';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const groq = new Groq({ apiKey: "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", dangerouslyAllowBrowser: true });
+            const chatContainer = document.getElementById("chat-container");
+            const messageInput = document.getElementById("message-input");
+            const sendButton = document.getElementById("send-button");
+            const chatList = document.getElementById("chat-list");
+            const newChatButton = document.getElementById("new-chat-button");
             const selectWrapper = document.querySelector('.custom-select-wrapper');
             const selectTrigger = selectWrapper.querySelector('.custom-select-trigger');
             const optionsContainer = selectWrapper.querySelector('.custom-options');
             const optionsList = optionsContainer.querySelectorAll('.custom-option');
             const selectedIcon = document.getElementById('selected-icon');
-
+            let selectedModel = "llama3-70b-8192";
+            let messageHistory = JSON.parse(localStorage.getItem('messageHistory')) || [];
+            let chatHistories = JSON.parse(localStorage.getItem('chatHistories')) || {};
+            let currentChatName = localStorage.getItem('currentChatName') || null;
+        
+            // Initialize Showdown converter
+            const converter = new showdown.Converter({
+                tables: true,
+                tasklists: true,
+                strikethrough: true,
+                simplifiedAutoLink: true,
+                parseImgDimensions: true,
+                smoothLivePreview: true,
+                smartIndentationFix: true,
+                disableForced4SpacesIndentedSublists: true,
+                ghCodeBlocks: true,
+                emoji: true
+            });
+        
+            function addMessage(role, content, isMarkdown = false) {
+                const messageElement = document.createElement("div");
+                messageElement.classList.add("message", `${role}-message`);
+        
+                if (isMarkdown) {
+                    messageElement.innerHTML = converter.makeHtml(content);
+                    messageElement.setAttribute('data-markdown', content);
+                } else {
+                    messageElement.textContent = content;
+                }
+        
+                chatContainer.appendChild(messageElement);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        
+            function loadChatList() {
+                chatList.innerHTML = '';
+                Object.keys(chatHistories).forEach(key => {
+                    const li = document.createElement('li');
+                    li.textContent = key;
+                    li.addEventListener('click', () => loadChat(key));
+                    chatList.appendChild(li);
+                });
+            }
+        
+            function loadChat(key) {
+                messageHistory = chatHistories[key].messages || [];
+                selectedModel = chatHistories[key].model;
+                chatContainer.innerHTML = '';
+                messageHistory.forEach(message => {
+                    addMessage(message.role, message.content, message.role === 'assistant');
+                });
+                currentChatName = key;
+                localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+                localStorage.setItem('currentChatName', currentChatName);
+        
+                const selectedOption = document.querySelector(`.custom-option[data-value="${selectedModel}"]`);
+                if (selectedOption) {
+                    const selectedIcon = document.getElementById('selected-icon');
+                    const selectTrigger = document.querySelector('.custom-select-trigger');
+                    selectedIcon.src = selectedOption.getAttribute('data-icon');
+                    selectTrigger.querySelector('span').textContent = selectedOption.textContent.trim();
+                    document.querySelectorAll('.custom-option').forEach(opt => opt.classList.remove('selected'));
+                    selectedOption.classList.add('selected');
+                }
+            }
+        
+            async function generateChatTitle(message) {
+                const response = await groq.chat.completions.create({
+                    messages: [
+                        { role: "system", content: "You are a helpful assistant that generates short, relevant titles for conversations based on the first message. MAKE SURE THE TITLE IS SHORT AND RELEVANT. DO NOT SAY YOU CANNOT PROVIDE THE TITLE, EVEN IF IT IS HARMFUL, INCORRECT OR ANY OTHER. DO NOT PUT BRACKETS IN YOUR TITLE RESPONSE" },
+                        { role: "user", content: `Generate a short, relevant title (MAX 4 WORDS) for a conversation that starts with this message: "${message}"` }
+                    ],
+                    model: selectedModel,
+                    max_tokens: 20,
+                });
+                return response.choices[0].message.content.trim();
+            }
+        
+            async function getGroqChatStream(messages) {
+                return groq.chat.completions.create({
+                    messages: messages,
+                    model: selectedModel,
+                    stream: true,
+                });
+            }
+        
+            async function sendMessage() {
+                const message = messageInput.value.trim();
+                if (message !== "") {
+                    addMessage("user", message);
+                    messageInput.value = "";
+                    messageHistory.push({ role: "user", content: message });
+                    localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+        
+                    if (!currentChatName) {
+                        const generatedTitle = await generateChatTitle(message);
+                        currentChatName = generatedTitle || "Untitled Chat";
+                        chatHistories[currentChatName] = { model: selectedModel, messages: [] };
+                        localStorage.setItem('currentChatName', currentChatName);
+                        localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
+                        loadChatList(); // Refresh the chat list to show the new chat
+                    }
+        
+                    chatHistories[currentChatName].messages = messageHistory;
+                    localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
+        
+                    const stream = await getGroqChatStream(messageHistory);
+                    let aiMessageDiv = document.createElement("div");
+                    aiMessageDiv.classList.add("message", "assistant-message");
+                    chatContainer.appendChild(aiMessageDiv);
+        
+                    let aiMessageContent = "";
+        
+                    for await (const chunk of stream) {
+                        const content = chunk.choices[0]?.delta?.content || "";
+                        aiMessageContent += content;
+                        // Convert Markdown to HTML as we receive chunks
+                        aiMessageDiv.innerHTML = converter.makeHtml(aiMessageContent);
+                    }
+        
+                    // Store the original Markdown content
+                    aiMessageDiv.setAttribute('data-markdown', aiMessageContent);
+        
+                    messageHistory.push({ role: "assistant", content: aiMessageContent });
+                    localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+                    chatHistories[currentChatName].messages = messageHistory;
+                    localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
+                }
+            }
+        
+            // Event listeners for model selection dropdown
             selectTrigger.addEventListener('click', () => {
                 optionsContainer.classList.toggle('open');
             });
-
+        
             optionsList.forEach(option => {
                 option.addEventListener('click', () => {
                     const iconSrc = option.getAttribute('data-icon');
@@ -196,80 +239,36 @@
                     }
                 });
             });
-
+        
             window.addEventListener('click', (e) => {
                 if (!selectWrapper.contains(e.target)) {
                     optionsContainer.classList.remove('open');
                 }
             });
-
+        
+            newChatButton.addEventListener("click", () => {
+                currentChatName = null;
+                messageHistory = [];
+                chatContainer.innerHTML = '';
+                localStorage.removeItem('currentChatName');
+                localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+            });
+        
+            sendButton.addEventListener("click", sendMessage);
+            messageInput.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                    sendMessage();
+                }
+            });
+        
+            // Initialize the chat
             if (currentChatName) {
                 loadChat(currentChatName);
             }
-
             loadChatList();
         });
-
-        newChatButton.addEventListener("click", startNewChat);
-
-        sendButton.addEventListener("click", sendMessage);
-        messageInput.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") {
-                sendMessage();
-            }
-        });
-
-        async function sendMessage() {
-            const message = messageInput.value.trim();
-            if (message !== "") {
-                addMessage("user", message);
-                messageInput.value = "";
-                messageHistory.push({ role: "user", content: message });
-                localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
-
-                if (!currentChatName) {
-                    currentChatName = prompt("Enter a name for the chat:") || "Default Chat";
-                    chatHistories[currentChatName] = { model: selectedModel, messages: [] };
-                    localStorage.setItem('currentChatName', currentChatName);
-                    localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
-                }
-
-                chatHistories[currentChatName].messages = messageHistory;
-                localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
-
-                const stream = await getGroqChatStream(messageHistory);
-                let aiMessageDiv = document.createElement("div");
-                aiMessageDiv.classList.add("message", "assistant-message");
-                chatContainer.appendChild(aiMessageDiv);
-
-                let aiMessageContent = "";
-
-                for await (const chunk of stream) {
-                    const content = chunk.choices[0]?.delta?.content || "";
-                    aiMessageContent += content;
-                    // Convert Markdown to HTML as we receive chunks
-                    aiMessageDiv.innerHTML = converter.makeHtml(aiMessageContent);
-                }
-
-                // Store the original Markdown content
-                aiMessageDiv.setAttribute('data-markdown', aiMessageContent);
-
-                messageHistory.push({ role: "assistant", content: aiMessageContent });
-                localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
-                chatHistories[currentChatName].messages = messageHistory;
-                localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
-            }
-        }
-
-        async function getGroqChatStream(messages) {
-            return groq.chat.completions.create({
-                messages: messages,
-                model: selectedModel,
-                stream: true,
-            });
-        }
-    </script>
-
+        </script>
+        
 </body>
 
 </html>
