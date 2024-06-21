@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,33 +8,45 @@
     <link rel="icon" href="https://asset.brandfetch.io/idxygbEPCQ/idzCyF-I44.png">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <img class="logo" src="https://raw.githubusercontent.com/RMNCLDYO/groq-ai-toolkit/main/.github/groq-logo.png" alt="">
+    <img class="logo" src="https://raw.githubusercontent.com/RMNCLDYO/groq-ai-toolkit/main/.github/groq-logo.png"
+        alt="">
     <h1 class="header-h1">Chat with Groq API</h1>
     <p class="header-h1">Developed by <a href="https://x.com/hhaydenk_"></a>Hayden Kong</p>
-    
+
     <div id="main-container">
         <div id="sidebar">
             <div class="custom-select-wrapper">
                 <div class="custom-select">
                     <div class="custom-select-trigger">
-                        <img id="selected-icon" src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png" alt="Selected Icon" class="option-icon">
+                        <img id="selected-icon"
+                            src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png"
+                            alt="Selected Icon" class="option-icon">
                         <span>Select AI Model</span>
                         <div class="arrow"></div>
                     </div>
                     <div class="custom-options">
-                        <div class="custom-option selected" data-value="llama3-8b-8192" data-icon="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png">
-                            <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png" alt="Llama Icon" class="option-icon"> Llama 3 8b
+                        <div class="custom-option selected" data-value="llama3-8b-8192"
+                            data-icon="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png">
+                            <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png"
+                                alt="Llama Icon" class="option-icon"> Llama 3 8b
                         </div>
-                        <div class="custom-option" data-value="llama3-70b-8192" data-icon="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png">
-                            <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png" alt="Llama Icon" class="option-icon"> LLama 3 70b
+                        <div class="custom-option" data-value="llama3-70b-8192"
+                            data-icon="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png">
+                            <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/meta-icon.png"
+                                alt="Llama Icon" class="option-icon"> LLama 3 70b
                         </div>
-                        <div class="custom-option" data-value="mixtral-8x7b-32768" data-icon="https://seeklogo.com/images/M/mistral-ai-icon-logo-B3319DCA6B-seeklogo.com.png">
-                            <img src="https://seeklogo.com/images/M/mistral-ai-icon-logo-B3319DCA6B-seeklogo.com.png" alt="Mixtral Icon" class="option-icon"> Mixtral 8x7B
+                        <div class="custom-option" data-value="mixtral-8x7b-32768"
+                            data-icon="https://seeklogo.com/images/M/mistral-ai-icon-logo-B3319DCA6B-seeklogo.com.png">
+                            <img src="https://seeklogo.com/images/M/mistral-ai-icon-logo-B3319DCA6B-seeklogo.com.png"
+                                alt="Mixtral Icon" class="option-icon"> Mixtral 8x7B
                         </div>
-                        <div class="custom-option" data-value="gemma-7b-it" data-icon="https://kura.pro/sebastienrousseau/images/logos/gemma.webp">
-                            <img src="https://kura.pro/sebastienrousseau/images/logos/gemma.webp" alt="Gemma Icon" class="option-icon"> Google Gemma 7b
+                        <div class="custom-option" data-value="gemma-7b-it"
+                            data-icon="https://kura.pro/sebastienrousseau/images/logos/gemma.webp">
+                            <img src="https://kura.pro/sebastienrousseau/images/logos/gemma.webp" alt="Gemma Icon"
+                                class="option-icon"> Google Gemma 7b
                         </div>
                     </div>
                 </div>
@@ -41,14 +54,14 @@
             <h3>Previous Chats</h3>
             <button id="new-chat-button" class="newchat-button">New Chat</button>
             <ul id="chat-list"></ul>
-            
+
         </div>
 
         <div id="chat-area">
-            
+
 
             <div id="chat-container">
-                
+
             </div>
 
             <div id="input-area">
@@ -59,142 +72,126 @@
     </div>
 
     <script type="importmap">
-        {
-            "imports": {
-                "@groq-sdk": "https://esm.run/groq-sdk"
-            }
-        }
-    </script>
+{
+"imports": {
+"@groq-sdk": "https://esm.run/groq-sdk"
+}
+}
+</script>
 
     <script type="module">
-            import Groq from "@groq-sdk";
-            const groq = new Groq({ apiKey: "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", dangerouslyAllowBrowser: true });
-            const chatContainer = document.getElementById("chat-container");
-            const messageInput = document.getElementById("message-input");
-            const sendButton = document.getElementById("send-button");
-            const chatList = document.getElementById("chat-list");
-            const newChatButton = document.getElementById("new-chat-button");
-            let selectedModel = "llama3-70b-8192";
-            let messageHistory = JSON.parse(localStorage.getItem('messageHistory')) || [];
-            let chatHistories = JSON.parse(localStorage.getItem('chatHistories')) || {};
-            let currentChatName = localStorage.getItem('currentChatName') || null;
+        import Groq from "@groq-sdk";
+        const groq = new Groq({ apiKey: "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", dangerouslyAllowBrowser: true });
+        const chatContainer = document.getElementById("chat-container");
+        const messageInput = document.getElementById("message-input");
+        const sendButton = document.getElementById("send-button");
+        const chatList = document.getElementById("chat-list");
+        const newChatButton = document.getElementById("new-chat-button");
+        let selectedModel = "llama3-70b-8192";
+        let messageHistory = JSON.parse(localStorage.getItem('messageHistory')) || [];
+        let chatHistories = JSON.parse(localStorage.getItem('chatHistories')) || {};
+        let currentChatName = localStorage.getItem('currentChatName') || null;
 
-            function addMessage(role, content) {
-                const messageElement = document.createElement("p");
-                messageElement.classList.add("message", `${role}-message`);
-                messageElement.innerHTML = content.replace(/\n/g, "<br>");
-                chatContainer.appendChild(messageElement);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+        function addMessage(role, content) {
+            const messageElement = document.createElement("p");
+            messageElement.classList.add("message", `${role}-message`);
+            messageElement.innerHTML = content.replace(/\n/g, "<br>");
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function loadChatList() {
+            chatList.innerHTML = '';
+            Object.keys(chatHistories).forEach(key => {
+                const li = document.createElement('li');
+                li.textContent = key;
+                li.addEventListener('click', () => loadChat(key));
+                chatList.appendChild(li);
+            });
+        }
+
+        function loadChat(key) {
+            messageHistory = chatHistories[key].messages || [];
+            selectedModel = chatHistories[key].model;
+            chatContainer.innerHTML = '';
+            messageHistory.forEach(message => addMessage(message.role, message.content));
+            currentChatName = key;
+            localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+            localStorage.setItem('currentChatName', currentChatName);
+
+            const selectedOption = document.querySelector(`.custom-option[data-value="${selectedModel}"]`);
+            if (selectedOption) {
+                const selectedIcon = document.getElementById('selected-icon');
+                const selectTrigger = document.querySelector('.custom-select-trigger');
+                selectedIcon.src = selectedOption.getAttribute('data-icon');
+                selectTrigger.querySelector('span').textContent = selectedOption.textContent.trim();
+                document.querySelectorAll('.custom-option').forEach(opt => opt.classList.remove('selected'));
+                selectedOption.classList.add('selected');
             }
+        }
 
-            function loadChatList() {
-                chatList.innerHTML = '';
-                Object.keys(chatHistories).forEach(key => {
-                    const li = document.createElement('li');
-                    li.textContent = key;
-                    li.addEventListener('click', () => loadChat(key));
-                    chatList.appendChild(li);
-                });
-            }
-
-            function loadChat(key) {
-                messageHistory = chatHistories[key].messages || [];
-                selectedModel = chatHistories[key].model;
-                chatContainer.innerHTML = '';
-                messageHistory.forEach(message => addMessage(message.role, message.content));
-                currentChatName = key;
+        function startNewChat() {
+            const chatName = prompt("Enter a name for the new chat:");
+            if (chatName) {
+                chatHistories[chatName] = { model: "llama3-70b-8192", messages: [] };
+                messageHistory = [];
+                currentChatName = chatName;
+                localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
                 localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
                 localStorage.setItem('currentChatName', currentChatName);
-
-                const selectedOption = document.querySelector(`.custom-option[data-value="${selectedModel}"]`);
-                if (selectedOption) {
-                    const selectedIcon = document.getElementById('selected-icon');
-                    const selectTrigger = document.querySelector('.custom-select-trigger');
-                    selectedIcon.src = selectedOption.getAttribute('data-icon');
-                    selectTrigger.querySelector('span').textContent = selectedOption.textContent.trim();
-                    document.querySelectorAll('.custom-option').forEach(opt => opt.classList.remove('selected'));
-                    selectedOption.classList.add('selected');
-                }
+                loadChatList();
+                chatContainer.innerHTML = '';
             }
+        }
 
-            function startNewChat() {
-                const chatName = prompt("Enter a name for the new chat:");
-                if (chatName) {
-                    chatHistories[chatName] = { model: "llama3-70b-8192", messages: [] };
-                    messageHistory = [];
-                    currentChatName = chatName;
-                    localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
-                    localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
-                    localStorage.setItem('currentChatName', currentChatName);
-                    loadChatList();
-                    chatContainer.innerHTML = '';
-                }
-            }
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectWrapper = document.querySelector('.custom-select-wrapper');
+            const selectTrigger = selectWrapper.querySelector('.custom-select-trigger');
+            const optionsContainer = selectWrapper.querySelector('.custom-options');
+            const optionsList = optionsContainer.querySelectorAll('.custom-option');
+            const selectedIcon = document.getElementById('selected-icon');
 
-            document.addEventListener('DOMContentLoaded', function () {
-                const selectWrapper = document.querySelector('.custom-select-wrapper');
-                const selectTrigger = selectWrapper.querySelector('.custom-select-trigger');
-                const optionsContainer = selectWrapper.querySelector('.custom-options');
-                const optionsList = optionsContainer.querySelectorAll('.custom-option');
-                const selectedIcon = document.getElementById('selected-icon');
+            selectTrigger.addEventListener('click', () => {
+                optionsContainer.classList.toggle('open');
+            });
 
-                selectTrigger.addEventListener('click', () => {
-                    optionsContainer.classList.toggle('open');
-                });
-
-                optionsList.forEach(option => {
-                    option.addEventListener('click', () => {
-                        const iconSrc = option.getAttribute('data-icon');
-                        selectedIcon.src = iconSrc;
-                        selectTrigger.querySelector('span').textContent = option.textContent.trim();
-                        optionsContainer.classList.remove('open');
-                        optionsList.forEach(opt => opt.classList.remove('selected'));
-                        option.classList.add('selected');
-                        selectedModel = option.getAttribute('data-value');
-                        if (currentChatName && chatHistories[currentChatName]) {
-                            chatHistories[currentChatName].model = selectedModel;
-                            localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
-                        }
-                    });
-                });
-
-                window.addEventListener('click', (e) => {
-                    if (!selectWrapper.contains(e.target)) {
-                        optionsContainer.classList.remove('open');
+            optionsList.forEach(option => {
+                option.addEventListener('click', () => {
+                    const iconSrc = option.getAttribute('data-icon');
+                    selectedIcon.src = iconSrc;
+                    selectTrigger.querySelector('span').textContent = option.textContent.trim();
+                    optionsContainer.classList.remove('open');
+                    optionsList.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedModel = option.getAttribute('data-value');
+                    if (currentChatName && chatHistories[currentChatName]) {
+                        chatHistories[currentChatName].model = selectedModel;
+                        localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
                     }
                 });
-
-                if (currentChatName) {
-                    loadChat(currentChatName);
-                }
-
-                loadChatList();
             });
 
-            newChatButton.addEventListener("click", startNewChat);
-
-            sendButton.addEventListener("click", sendMessage);
-            messageInput.addEventListener("keydown", (event) => {
-                if (event.key === "Enter") {
-                    sendMessage();
+            window.addEventListener('click', (e) => {
+                if (!selectWrapper.contains(e.target)) {
+                    optionsContainer.classList.remove('open');
                 }
             });
 
-         optionsList.forEach(option => {
-        option.addEventListener('click', () => {
-            const iconSrc = option.getAttribute('data-icon');
-            selectedIcon.src = iconSrc;
-            selectTrigger.querySelector('span').textContent = option.textContent.trim();
-            optionsContainer.classList.remove('open');
-            optionsList.forEach(opt => opt.classList.remove('selected'));
-            option.classList.add('selected');
-            let selectedModel = option.getAttribute('data-value'); // Move declaration here
-            if (currentChatName && chatHistories[currentChatName]) {
-            chatHistories[currentChatName].model = selectedModel;
-            localStorage.setItem('chatHistories', JSON.stringify(chatHistories)); // Update local storage
+            if (currentChatName) {
+                loadChat(currentChatName);
+            }
+
+            loadChatList();
+        });
+
+        newChatButton.addEventListener("click", startNewChat);
+
+        sendButton.addEventListener("click", sendMessage);
+        messageInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                sendMessage();
             }
         });
-        });   
 
         async function sendMessage() {
             const message = messageInput.value.trim();
@@ -204,7 +201,6 @@
                 messageHistory.push({ role: "user", content: message });
                 localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
 
-                // Check if currentChatName is null or undefined
                 if (!currentChatName) {
                     currentChatName = prompt("Enter a name for the chat:") || "Default Chat";
                     chatHistories[currentChatName] = { model: selectedModel, messages: [] };
@@ -215,33 +211,30 @@
                 chatHistories[currentChatName].messages = messageHistory;
                 localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
 
-                const response = await getGroqChatCompletion(messageHistory);
-                const aiMessage = response.choices[0]?.message?.content || "";
-                addMessage("assistant", aiMessage);
+                const stream = await getGroqChatStream(messageHistory);
+                let aiMessage = "";
+                for await (const chunk of stream) {
+                    const content = chunk.choices[0]?.delta?.content || "";
+                    aiMessage += content;
+                    addMessage("assistant", aiMessage);
+                }
+
                 messageHistory.push({ role: "assistant", content: aiMessage });
                 localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
                 chatHistories[currentChatName].messages = messageHistory;
                 localStorage.setItem('chatHistories', JSON.stringify(chatHistories));
-                console.log(selectedModel)
             }
         }
 
-        // Load chat list
-        loadChatList();
-
-        // Load current chat
-        if (currentChatName) {
-            loadChat(currentChatName);
-        }
-
-        async function getGroqChatCompletion(messages) {
+        async function getGroqChatStream(messages) {
             return groq.chat.completions.create({
                 messages: messages,
                 model: selectedModel,
+                stream: true,
             });
-            console.log("Your selected model is:")
         }
     </script>
 
 </body>
+
 </html>
