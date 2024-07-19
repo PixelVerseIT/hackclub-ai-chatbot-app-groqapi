@@ -33,6 +33,15 @@
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px 0 0 5px;
+            outline: none;
+            transition: 0.2s;
+        }
+        input:hover,
+        input:focus {
+            border: 1px solid #3498db;
+        }
+        input::placeholder {
+            color: #aaa;
         }
         button {
             font-size: 16px;
@@ -61,44 +70,57 @@
             text-align: center;
         }
         #generatedImage {
+            width: 512px;
+            height: 512px;
             max-width: 100%;
-            height: auto;
+            object-fit: cover;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
         }
-        .loading {
+        .skeleton {
+            background-color: #eee;
+            background-image: linear-gradient(90deg, #eee, #f5f5f5, #eee);
+            background-size: 200px 100%;
+            background-repeat: no-repeat;
+            border-radius: 5px;
+            display: inline-block;
+            line-height: 1;
+            width: 512px;
+            height: 512px;
+            max-width: 100%;
+            animation: shimmer 1.2s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+            100% {
+                background-position: calc(200px + 100%) 0;
+            }
+        }
+        #skeletonLoader {
             display: none;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
+            margin: 20px auto;
         }
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        #warning {
+            font-size: 14px;
+            color: #7f8c8d;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>AI Image Generator</h1>
+        <h1 style="text-align: center;">AI Image Generator</h1>
         <div class="input-group">
             <input type="text" id="prompt" placeholder="Enter your prompt here">
             <button id="generateBtn">Generate</button>
         </div>
         <div id="error"></div>
-        <div class="loading">
-            <div class="loading-spinner"></div>
-        </div>
+        <div id="skeletonLoader" class="skeleton"></div>
         <div id="imageContainer">
             <img id="generatedImage" src="" alt="Generated image will appear here" style="display: none;">
+            <p id="warning" style="display: none;">Dalle-2 may generate inappropriate or incorrect images that don't represent my views.</p>
         </div>
     </div>
 
@@ -107,8 +129,10 @@
         const generateBtn = document.getElementById('generateBtn');
         const errorDiv = document.getElementById('error');
         const generatedImage = document.getElementById('generatedImage');
-        const loadingDiv = document.querySelector('.loading');
+        const skeletonLoader = document.getElementById('skeletonLoader');
+        const warning = document.getElementById('warning');
         const token = 'your token from #open-ai-token'
+
 
         generateBtn.addEventListener('click', generateImage);
         promptInput.addEventListener('keypress', function(e) {
@@ -126,7 +150,8 @@
 
             errorDiv.textContent = '';
             generateBtn.disabled = true;
-            loadingDiv.style.display = 'flex';
+            skeletonLoader.style.display = 'block';
+            warning.style.display = 'block';
             generatedImage.style.display = 'none';
 
             try {
@@ -149,13 +174,15 @@
 
                 const data = await response.json();
                 generatedImage.src = data.data[0].url;
-                generatedImage.style.display = 'block';
+                generatedImage.onload = function() {
+                    skeletonLoader.style.display = 'none';
+                    generatedImage.style.display = 'block';
+                };
             } catch (err) {
                 errorDiv.textContent = 'Error generating image. Please try again.';
                 console.error(err);
             } finally {
                 generateBtn.disabled = false;
-                loadingDiv.style.display = 'none';
             }
         }
     </script>
