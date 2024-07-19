@@ -178,7 +178,7 @@
         const warning = document.getElementById('warning');
         const placeholderElement = document.querySelector('.placeholder');
         const downloadBtn = document.getElementById('downloadBtn');
-        const token = 'your token from #open-ai-token'
+        const token = prompt('Please enter your API token from #open-ai-token:');
 
         generateBtn.addEventListener('click', generateImage);
         promptInput.addEventListener('keypress', function(e) {
