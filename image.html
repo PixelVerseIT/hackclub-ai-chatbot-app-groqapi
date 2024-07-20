@@ -22,26 +22,42 @@
         h1 {
             color: #2c3e50;
             margin-bottom: 20px;
+            text-align: center;
         }
         .input-group {
             display: flex;
             margin-bottom: 20px;
         }
-        input {
+        .input-wrapper {
+            position: relative;
             flex-grow: 1;
+        }
+        input {
+            width: 100%;
             font-size: 16px;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px 0 0 5px;
             outline: none;
             transition: 0.2s;
+            box-sizing: border-box;
         }
         input:hover,
         input:focus {
-            border: 1px solid #3498db;
+            border-color: #3498db;
         }
-        input::placeholder {
+        .placeholder {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
             color: #aaa;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+        input:not(:placeholder-shown) + .placeholder,
+        input:focus + .placeholder {
+            opacity: 0;
         }
         button {
             font-size: 16px;
@@ -92,12 +108,8 @@
             animation: shimmer 1.2s ease-in-out infinite;
         }
         @keyframes shimmer {
-            0% {
-                background-position: -200px 0;
-            }
-            100% {
-                background-position: calc(200px + 100%) 0;
-            }
+            0% { background-position: -200px 0; }
+            100% { background-position: calc(200px + 100%) 0; }
         }
         #skeletonLoader {
             display: none;
@@ -107,32 +119,6 @@
             font-size: 14px;
             color: #7f8c8d;
         }
-
-        .input-wrapper {
-            position: relative;
-            flex-grow: 1;
-        }
-
-        #prompt {
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .placeholder {
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            color: #aaa;
-            pointer-events: none;
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        #prompt:not(:placeholder-shown) + .placeholder,
-        #prompt:focus + .placeholder {
-            opacity: 0;
-        }
-
         #downloadBtn {
             display: none;
             margin-top: 10px;
@@ -144,15 +130,36 @@
             cursor: pointer;
             font-size: 16px;
         }
-
         #downloadBtn:hover {
             background-color: #45a049;
+        }
+        #previousPrompts {
+            margin-top: 20px;
+            text-align: left;
+        }
+        #previousPrompts h3 {
+            margin-bottom: 10px;
+        }
+        #previousPromptsList {
+            list-style-type: none;
+            padding: 0;
+        }
+        #previousPromptsList li {
+            cursor: pointer;
+            padding: 5px 10px;
+            background-color: #f0f0f0;
+            margin-bottom: 5px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        #previousPromptsList li:hover {
+            background-color: #e0e0e0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 style="text-align: center;">AI Image Generator</h1>
+        <h1>AI Image Generator</h1>
         <div class="input-group">
             <div class="input-wrapper">
                 <input type="text" id="prompt" placeholder=" ">
@@ -167,6 +174,10 @@
             <button id="downloadBtn">Download Image</button>
             <p id="warning" style="display: none;">Dalle-2 may generate inappropriate or incorrect images that don't represent my views.</p>
         </div>
+        <div id="previousPrompts">
+            <h3>Previous Prompts</h3>
+            <ul id="previousPromptsList"></ul>
+        </div>
     </div>
 
     <script>
@@ -178,31 +189,39 @@
         const warning = document.getElementById('warning');
         const placeholderElement = document.querySelector('.placeholder');
         const downloadBtn = document.getElementById('downloadBtn');
-        const token = prompt('Please enter your API token from #open-ai-token:');
+        const previousPromptsList = document.getElementById('previousPromptsList');
+
+        let token = localStorage.getItem('apiToken');
+        if (!token) {
+            token = prompt('Please enter your API token from #open-ai-token:');
+            localStorage.setItem('apiToken', token);
+        }
+
+        const placeholders = [
+            "A serene landscape with mountains and a lake",
+            "A futuristic cityscape with flying cars",
+            "A magical forest with glowing mushrooms",
+            "An underwater scene with colorful coral reefs",
+            "A steampunk-inspired flying machine"
+        ];
+
+        let currentPlaceholderIndex = 0;
+        let previousPrompts = JSON.parse(localStorage.getItem('previousPrompts')) || [];
 
         generateBtn.addEventListener('click', generateImage);
-        promptInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                generateImage();
-            }
+        promptInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') generateImage();
         });
-
-        promptInput.addEventListener('input', function() {
-            if (this.value) {
-                placeholderElement.style.opacity = '0';
-            } else {
-                placeholderElement.style.opacity = '1';
-            }
-        });
-
+        promptInput.addEventListener('input', updatePlaceholder);
         downloadBtn.addEventListener('click', downloadImage);
 
+        function updatePlaceholder() {
+            placeholderElement.style.opacity = this.value ? '0' : '1';
+        }
+
         async function generateImage() {
-            let prompt = promptInput.value.trim();
-            if (!prompt) {
-                prompt = placeholderElement.textContent;
-                promptInput.value = prompt;
-            }
+            let prompt = promptInput.value.trim() || placeholderElement.textContent;
+            promptInput.value = prompt;
 
             errorDiv.textContent = '';
             generateBtn.disabled = true;
@@ -225,17 +244,17 @@
                     })
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to generate image');
-                }
+                if (!response.ok) throw new Error('Failed to generate image');
 
                 const data = await response.json();
                 generatedImage.src = data.data[0].url;
-                generatedImage.onload = function() {
+                generatedImage.onload = () => {
                     skeletonLoader.style.display = 'none';
                     generatedImage.style.display = 'block';
                     downloadBtn.style.display = 'block';
                 };
+
+                addToPreviousPrompts(prompt);
             } catch (err) {
                 errorDiv.textContent = 'Error generating image. Please try again.';
                 console.error(err);
@@ -244,25 +263,23 @@
             }
         }
 
-        function downloadImage() {
-            const link = document.createElement('a');
-            link.href = generatedImage.src;
-            link.download = 'generated_image.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        async function downloadImage() {
+            try {
+                const response = await fetch(generatedImage.src);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'generated_image.png';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error downloading image:', error);
+                alert('Failed to download the image. Please try again.');
+            }
         }
-
-        // Rotating placeholder functionality
-        const placeholders = [
-            "A serene landscape with mountains and a lake",
-            "A futuristic cityscape with flying cars",
-            "A magical forest with glowing mushrooms",
-            "An underwater scene with colorful coral reefs",
-            "A steampunk-inspired flying machine"
-        ];
-
-        let currentPlaceholderIndex = 0;
 
         function rotatePlaceholder() {
             placeholderElement.style.opacity = 0;
@@ -275,7 +292,30 @@
             }, 300);
         }
 
+        function addToPreviousPrompts(prompt) {
+            if (!previousPrompts.includes(prompt)) {
+                previousPrompts.unshift(prompt);
+                if (previousPrompts.length > 5) previousPrompts.pop();
+                localStorage.setItem('previousPrompts', JSON.stringify(previousPrompts));
+                updatePreviousPromptsList();
+            }
+        }
+
+        function updatePreviousPromptsList() {
+            previousPromptsList.innerHTML = '';
+            previousPrompts.forEach(prompt => {
+                const li = document.createElement('li');
+                li.textContent = prompt;
+                li.addEventListener('click', () => {
+                    promptInput.value = prompt;
+                    generateImage();
+                });
+                previousPromptsList.appendChild(li);
+            });
+        }
+
         setInterval(rotatePlaceholder, 3000);
+        updatePreviousPromptsList();
     </script>
 </body>
 </html>
